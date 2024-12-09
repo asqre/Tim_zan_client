@@ -5,8 +5,22 @@ import {CONFIG} from "../config"
 
 
 interface GameContextType {
+  itemsHandler: {
+    checkItem: (item: string) => boolean;
+  };
+  scoreHandler: {
+    addScore: (points: number) => void;
+    resetScore: () => void;
+    getScore: () => number;
+  };
+  coinsHandler: {
+    addCoins: (coins: number) => void;
+    getCoins: () => number;
+  };
+
   // Methods
   handleResize: () => void;
+  chooseActiveCat: () => void;
 
   // Attributes
   tickCount: number;
@@ -18,10 +32,12 @@ interface GameContextType {
   backgroundAreaSize: { width: number | null; height: number | null };
   setBackgroundAreaSize: React.Dispatch<React.SetStateAction<{ width: number | null; height: number | null }>>;
   cats: CatsType;
-  items: ItemsType;
-  score: number;
-  setScore: React.Dispatch<React.SetStateAction<number>>;
+  activeCat: number | null;
+  setActiveCat: React.Dispatch<React.SetStateAction<number | null>>;
+  isInteracting: Boolean;
+  setIsInteracting: React.Dispatch<React.SetStateAction<Boolean>>;
   meowBarProgress: number;
+  setMeowBarProgress: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -39,16 +55,62 @@ export const GameContextProvider = ({children} : {children : React.ReactNode}) =
         height: null
     });
     const [cats] = useState<CatsType>(CONFIG.cats); 
+
     const [meowBarProgress, setMeowBarProgress] = useState<number>(0);
-    const [meowBarTickProgress, setMeowBarTickProgress] = useState<number>(0);
+
+    const [isInteracting, setIsInteracting] = useState<Boolean>(false)
+    const [activeCat, setActiveCat] = useState<number | null>(null);
 
     // TO INTEGRATE WITH API
     const [items] = useState<ItemsType>([]); 
     const [score, setScore] = useState<number>(0); 
+    const [coins, setCoins] = useState<number>(0); 
 
-    // Clears everything and starts again the game
-    function startGame(){
+    // Items Handling Functions
+    const itemsHandler = {
+      checkItem: (item: string) => {
+        if(items.includes(item)){
+          return true
+        } else {
+          return false
+        }
+      },
+    };
+
+    // Score Handling Functions
+    const scoreHandler = {
+      addScore: (points: number) => {
+        setScore((prev) => prev + Math.floor(points));
+      },
+      resetScore: () => {
+        setScore(0);
+      },
+      getScore: () => {
+        return score;
+      },
+    };
+  
+    // Coins Handling Functions
+    const coinsHandler = {
+      addCoins: (coins: number) => {
+        setCoins((prev) => prev + Math.floor(coins));
+      },
+      getCoins: () => {
+        return coins;
+      },
+    };
+
+    // Clears everything
+    function resetGame(){
       gameInterval.current != null ? clearInterval(gameInterval.current) : null
+      setIsInteracting(false)
+      setActiveCat(null)
+      chooseActiveCat()
+    }
+    // Starts again the game
+    function startGame(){
+      resetGame()
+      handleResize()
       gameInterval.current = setInterval(() => {
         setTickCount((prevTick) => prevTick + 1); 
       }, CONFIG.tickDurationMs)
@@ -56,6 +118,7 @@ export const GameContextProvider = ({children} : {children : React.ReactNode}) =
 
     // Sets the gameAreaSize and backgroundAreaSize
     const handleResize = () => {
+      console.log("resized")
       if(gameAreaElement.current != null && backgroundAreaElement.current != null){
           setGameAreaSize({
               width: gameAreaElement.current.clientWidth,
@@ -78,20 +141,18 @@ export const GameContextProvider = ({children} : {children : React.ReactNode}) =
       };
     }, [])
 
-    // Updates on each tick
-    useEffect(() => {
-      if(meowBarTickProgress >= CONFIG.progressBarEveryTicks){
-        setMeowBarProgress(prev => prev + 1)
-        setMeowBarTickProgress(0)
+    // Chooses a cat for interaction
+    function chooseActiveCat(){
+      if(items.includes(CONFIG.catsItem)){
+        setActiveCat(Math.floor(Math.random() * 5));
       } else {
-        setMeowBarTickProgress(prev => prev + 1)
+        setActiveCat(Math.floor(Math.random() * 3));
       }
-    }, [tickCount])
-
+    }
 
 
     return (
-      <GameContext.Provider value={{handleResize, tickCount, gameInterval, gameAreaElement, gameAreaSize, setGameAreaSize, backgroundAreaElement, backgroundAreaSize, setBackgroundAreaSize, cats, items, score, setScore, meowBarProgress}}>
+      <GameContext.Provider value={{scoreHandler, itemsHandler, coinsHandler, handleResize, tickCount, gameInterval, gameAreaElement, gameAreaSize, setGameAreaSize, backgroundAreaElement, backgroundAreaSize, setBackgroundAreaSize, cats, activeCat, setActiveCat, chooseActiveCat, isInteracting, setIsInteracting, meowBarProgress, setMeowBarProgress}}>
         {children}
       </GameContext.Provider>
     );
