@@ -91,9 +91,9 @@ export const InteractionBar = ({className} : {className: string}) => {
         <>  
             <div className={className}>
                 <img className="absolute top-0 left-0 w-full h-full" src={RythBarBackgroundAsset}/>
-                <button className="relative w-20 h-20" onMouseDown={() => startHold("pet")} onMouseUp={stopHold} onMouseLeave={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={PetButtonIcon}/></button>
-                <button className="relative w-20 h-20" onMouseDown={() => startHold("scratch")} onMouseUp={stopHold} onMouseLeave={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={ScratchButtonIcon}/></button>
-                <button className="relative w-20 h-20" onMouseDown={() => startHold("rub")} onMouseUp={stopHold} onMouseLeave={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={RubButtonIcon}/></button>
+                <button className="relative w-20 h-20" onTouchStart={() => startHold("pet")} onMouseDown={() => startHold("pet")} onMouseUp={stopHold} onMouseLeave={stopHold} onTouchEnd={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={PetButtonIcon}/></button>
+                <button className="relative w-20 h-20" onTouchStart={() => startHold("scratch")} onMouseDown={() => startHold("scratch")} onMouseUp={stopHold} onMouseLeave={stopHold} onTouchEnd={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={ScratchButtonIcon}/></button>
+                <button className="relative w-20 h-20" onTouchStart={() => startHold("rub")} onMouseDown={() => startHold("rub")} onMouseUp={stopHold} onMouseLeave={stopHold} onTouchEnd={stopHold}><img className="absolute top-0 left-0 w-full h-full pointer-events-none" src={RubButtonIcon}/></button>
                 <div className="absolute right-0 top-0 h-full w-10 flex items-center justify-center">
                     {
                     currentAction.current != null &&
