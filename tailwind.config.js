@@ -16,7 +16,8 @@ export default {
       // Here are 2 fonts (the imports are in the index.css inside the src folder), example of use: "font-inter"
       fontFamily: {
         inter: ['Inter', 'sans-serif'], 
-        archivo: ['Archivo', 'sans-serif']
+        archivo: ['Archivo', 'sans-serif'],
+        pixeloid: ['Pixeloid', 'sans'], // Add your custom font here
       },
       // Some premade keyframes for animations made by me
       keyframes: {

@@ -5,4 +5,14 @@ export interface Cat {
   }
   
 export type CatsType = Cat[];
-export type ItemsType = string[]; 
+
+export interface ItemType {
+  name: string;
+  description: string;
+  addedCats: number; 
+  scoreMultiplier: number; 
+  cost: number;
+  quantity: number;
+}
+
+export type ItemsType = ItemType[]; 

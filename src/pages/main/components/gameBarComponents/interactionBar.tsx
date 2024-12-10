@@ -15,7 +15,7 @@ import InteractionBarChance30 from "../../../../assets/interactionBarChance30.pn
 import InteractionBarChance15 from "../../../../assets/interactionBarChance15.png"
 
 export const InteractionBar = ({className} : {className: string}) => {
-    const {tickCount, scoreHandler, meowBarProgress, setMeowBarProgress} = useGameContext();
+    const {tickCount, scoreHandler, coinsHandler, meowBarProgress, setMeowBarProgress} = useGameContext();
     const [userChancePercentage, setUserChancePercentage] = useState<number>(0);
     const [userChanceUp, setUserChanceUp] = useState<boolean>(true);
     const [ticksFromLastInteractionTick, setTicksFromLastInteractionTick] = useState<number>(0);
@@ -31,14 +31,14 @@ export const InteractionBar = ({className} : {className: string}) => {
 
                 if (userChanceUp){
                     if(userChancePercentage < 100){
-                        setUserChancePercentage(prev => prev + CONFIG.interactionDefaultSpeedPx);
+                        setUserChancePercentage(prev => prev + CONFIG.interactionDefaultSpeed);
                         
                     } else {
                         setUserChanceUp(false)
                     }
                 }else{
                     if(userChancePercentage > 0){
-                        setUserChancePercentage(prev => prev - CONFIG.interactionDefaultSpeedPx);
+                        setUserChancePercentage(prev => prev - CONFIG.interactionDefaultSpeed);
                     } else {
                         setUserChanceUp(true)
                     }
@@ -66,20 +66,26 @@ export const InteractionBar = ({className} : {className: string}) => {
     const stopHold = () => {
         if(currentAction.current != null){
             if(currentAction.current == "pet" && userChancePercentage < CONFIG.petSuccessPercentage){
-                scoreHandler.addScore((CONFIG.petSuccessPointsAward - CONFIG.petSuccessPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.petSuccessPointsAward - (CONFIG.petSuccessPointsAward * CONFIG.DecreaseAwardRate ) * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.petSuccessCoinsAward)
             } else if (currentAction.current == "pet"){
                 setMeowBarProgress(prev => prev - CONFIG.FailedInteractionMeowMeterPenalty)
-                scoreHandler.addScore((CONFIG.petFailPointsAward - CONFIG.petFailPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.petFailPointsAward - ( CONFIG.petFailPointsAward * CONFIG.DecreaseAwardRate) * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.petFailCoinsAward)
             } else if(currentAction.current == "scratch" && userChancePercentage < CONFIG.scratchSuccessPercentage){
-                scoreHandler.addScore((CONFIG.scratchSuccessPointsAward - CONFIG.scratchSuccessPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.scratchSuccessPointsAward - (CONFIG.scratchSuccessPointsAward * CONFIG.DecreaseAwardRate) / 10 * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.scratchSuccessCoinsAward)
             } else if (currentAction.current == "scratch"){
                 setMeowBarProgress(prev => prev - CONFIG.FailedInteractionMeowMeterPenalty)
-                scoreHandler.addScore((CONFIG.scratchFailPointsAward - CONFIG.scratchFailPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.scratchFailPointsAward - (CONFIG.scratchFailPointsAward * CONFIG.DecreaseAwardRate) * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.scratchFailCoinsAward)
             } else if(currentAction.current == "rub" && userChancePercentage < CONFIG.rubSuccessPercentage){
-                scoreHandler.addScore((CONFIG.rubSuccessPointsAward - CONFIG.rubSuccessPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.rubSuccessPointsAward - (CONFIG.rubSuccessPointsAward * CONFIG.DecreaseAwardRate) * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.rubSuccessCoinsAward)
             } else if(currentAction.current == "rub"){
                 setMeowBarProgress(prev => prev - CONFIG.FailedInteractionMeowMeterPenalty)
-                scoreHandler.addScore((CONFIG.rubFailPointsAward - CONFIG.rubFailPointsAward * (CONFIG.DecreaseAwardRate / 10 * (100 - meowBarProgress))))
+                scoreHandler.addScore((CONFIG.rubFailPointsAward - (CONFIG.rubFailPointsAward * CONFIG.DecreaseAwardRate ) * (100 - meowBarProgress)))
+                coinsHandler.addCoins(CONFIG.rubFailCoinsAward)
             }
         }
 

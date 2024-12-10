@@ -8,13 +8,14 @@ import MeowBarOutlineAsset from "../../../assets/meowBarOutline.png"
 
 
 export const MeowBar = ({className} : {className: string}) => {
-    const {gameAreaSize, chooseActiveCat, isInteracting, setIsInteracting, itemsHandler, tickCount, meowBarProgress, setMeowBarProgress, cats} = useGameContext();
+    const {gameAreaSize, chooseActiveCat, isInteracting, setIsInteracting, tickCount, meowBarProgress, setMeowBarProgress, cats, score, getTotalCatsNumber} = useGameContext();
     const barElement = useRef<HTMLDivElement | null>(null);
     const [barAreaSize, setBarAreaSize] = useState<{width : number | null, height: number | null}>({
         width: null,
         height: null
     });
     const [meowBarTickProgress, setMeowBarTickProgress] = useState<number>(0);
+    const [lastScore, setLastScore] = useState<number>(0);
     const changingElement = useRef<HTMLDivElement | null>(null);
 
     // Set barsize as soon as the game loads
@@ -31,33 +32,8 @@ export const MeowBar = ({className} : {className: string}) => {
     useEffect(() => {
         if(meowBarTickProgress >= CONFIG.progressBarEveryTicks){
             setMeowBarTickProgress(0)
-            var multiplier = 1;
-            
 
-            if (!isInteracting){
-                if(meowBarProgress < 100){
-                    if(itemsHandler.checkItem(CONFIG.catsItem)){
-                        //multiplier = multiplier + CONFIG.progressMultiplierItem;
-                        cats.forEach((cat) => {
-                            console.log(`Processing cat at (${cat.x}, ${cat.y})`);
-                            multiplier = multiplier + CONFIG.progressSpeedMultiplierPerCat
-                            // Add your logic here for each cat with requiresItem: false
-                        });
-                    } else {
-                        cats.forEach((cat) => {
-                            if (!cat.requiresItem) {
-                            console.log(`Processing cat at (${cat.x}, ${cat.y})`);
-                            multiplier = multiplier + CONFIG.progressSpeedMultiplierPerCat
-                            // Add your logic here for each cat with requiresItem: false
-                            }
-                        });
-                    }
-                    setMeowBarProgress(prev => prev + 1)
-                } else {
-                    setIsInteracting(true)
-                }
-                
-            } else { 
+            if (isInteracting) { 
                 if (meowBarProgress > 0){
                     setMeowBarProgress(prev => prev - 1)
                 } else {
@@ -69,7 +45,33 @@ export const MeowBar = ({className} : {className: string}) => {
         } else {
           setMeowBarTickProgress(prev => prev + 1)
         }
-      }, [tickCount])
+    }, [tickCount])
+
+    // On score added progress meow bar
+    useEffect(() => {
+        if (!isInteracting){
+            var multiplier = 0;
+            //multiplier = multiplier + CONFIG.progressMultiplierItem;
+            cats.map((_, index) => {
+                if(index < getTotalCatsNumber()){
+                    multiplier = multiplier + CONFIG.progressSpeedMultiplierPerCat
+                }
+            });
+
+
+            var scoreNeeded = CONFIG.progressBarEveryPoints - (CONFIG.progressBarEveryPoints * multiplier)
+            //if(itemsHandler.checkItem(CONFIG.scoreMultiplierItem)){scoreNeeded = scoreNeeded * CONFIG.scoreMultiplierModifier}
+            if(score >= scoreNeeded + lastScore){
+                setLastScore(score)
+                setMeowBarProgress(prev => prev + CONFIG.progressBarEveryPointsBy)
+            }
+            if (meowBarProgress >= 100) {
+                setMeowBarProgress(100)
+                setIsInteracting(true)
+            }
+
+        }
+    }, [score])
 
     // Updates bar each time the progress changes
     useEffect(() => {   
