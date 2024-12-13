@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:asqre/Tim_zan_client.git",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "server": "nodemon src/index.js",
+    "frontend/client": "cd ../client && yarn dev",
+    "client": "concurrently \"yarn server\" \"yarn frontend/client\""
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "concurrently": "^9.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4",
+    "morgan": "^1.10.0"
+  }
+}
